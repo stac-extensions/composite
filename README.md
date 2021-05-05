@@ -3,39 +3,80 @@
 - **Title:** Composite
 - **Identifier:** <https://stac-extensions.github.io/composite/v1.0.0/schema.json>
 - **Field Name Prefix:** composite
-- **Scope:** Item, Collection
+- **Scope:** Item
 - **Extension [Maturity Classification](https://github.com/radiantearth/stac-spec/tree/master/extensions/README.md#extension-maturity):** Proposal
 - **Owner**: @emmanuelmathot
 
-This document explains the Template Extension to the [SpatioTemporal Asset Catalog](https://github.com/radiantearth/stac-spec) (STAC) specification.
-It is helping the user to have some rendering hints of the item using one or
-more raster assets (RGB combination, simple band value processing) and to create on the fly visualisation with dynamic tilers.
+This document explains the Composite Extension to the [SpatioTemporal Asset Catalog](https://github.com/radiantearth/stac-spec) (STAC) specification.
+This meta-extension does not define any new fields but the usage of muliple extensions to compose
+new assets ([virtual](https://github.com/stac-extensions/virtual-assets)).
+The main purpose is to provide with potential assets with th assets referenced in an Item.
+For instance, RGB combination, asset's band value processing and to create on the fly visualisation with dynamic tilers.
 
 - Examples:
-  - [Item example](examples/item.json): Shows the basic usage of the extension in a STAC Item
-  - [Collection example](examples/collection.json): Shows the basic usage of the extension in a STAC Collection
+  - [Landsat-8 example](examples/item-landsat8.json): Shows the basic usage of the extension in a landsat-8 STAC Item
 - [JSON Schema](json-schema/schema.json)
 - [Changelog](./CHANGELOG.md)
 
 ## Raster Composition using `virtual:assets`
 
-This extension describes how to specify possible raster bands composition. This requires the usage of the [virtual-assets](https://github.com/stac-extensions/virtual-assets) extensions that allows to specify assets composition and repositioning and some fields of the [processing](https://github.com/stac-extensions/processing) extension).
-
+This use case describes how to specify possible raster bands composition. 
+This requires the usage of the [virtual-assets](https://github.com/stac-extensions/virtual-assets) extensions that allows to specify assets
+composition and repositioning of one or more [raster bands](https://github.com/stac-extensions/raster) in assets.
 At least one virtual asset is required to make a raster composite.
+It cross references in the desired order the assets containing the bands for the composition.
 
-### Virtual Asset fields
+### Simple RGB raster composition
 
-Raster composites defines the following fields in `virtual:assets` items.
+A very simple case would be the composition of a RGB natural color image of a
+[Sentinel-2 item](https://github.com/stac-extensions/raster/blob/main/examples/item-sentinel2.json).
 
-| Field Name               | Type      | Description                                                            |
-| ------------------------ | --------- | ---------------------------------------------------------------------- |
-| raster:range             | \[number] | range of valid pixels values in the composition                        |
-| raster:resampling_method | string    | Resampling method, one of `nearest`, `average`, `bilinear` or `cubic`. |
-| processing:expression    | string    | [https://github.com/stac-extensions/processing/pull/2]                 |
+```json
+"virtual:assets":{
+  "overview":
+  {
+    "title": "Sentinel-2 Natural Color",
+    "href": [ 
+      "https://raw.githubusercontent.com/stac-extensions/raster/main/examples/item-sentinel2.json#B04",
+      "https://raw.githubusercontent.com/stac-extensions/raster/main/examples/item-sentinel2.json#B03",
+      "https://raw.githubusercontent.com/stac-extensions/raster/main/examples/item-sentinel2.json#B02"
+    ]
+  }
+}
+```
+
+### Single raster band index processing
+
+The [processing:expression](https://github.com/stac-extensions/processing/pull/2) field can be used in `virtual:assets` item
+to specify a processing formula to be applied to the pixel values in the bands.
+The following example describes a virtual asset with the Normalized Difference Vegetation Index (NDVI) computed from 2 other bands.
+The [`raster:band`](https://github.com/stac-extensions/raster) field is also used to specify the range of value produced.
+
+```json
+"virtual:assets":{
+  "NDVI": 
+  {
+    "href": [ "#B04", "#B05" ],
+    "title": "Normalized Difference Vegetation Index",
+    "processing:expression": {
+      "format": "rio-calc",
+      "expression": "(B05–B04)/(B05+B04)"
+    },
+    "raster:bands": [
+      { 
+        "statistics": {
+          "minimum": -1,
+          "maximum": 1
+        }
+      }
+    ]
+  }
+}
+```
 
 ## Dynamic tile servers integration
 
-Dynamic tile servers could exploit the information in the raster extension to automatically produce RGB
+Dynamic tile servers could exploit the information in the `composite` extension to automatically produce RGB tiles
 from raster bands or composition using their parameters.
 
 ### Titiler
@@ -46,26 +87,49 @@ Some query parameters could be set with the information from raster extension.
 
 #### Shortwave Infra-red visual thermal signature example
 
-From the [Sentinel-2 example](examples/item-sentinel2.json):
+From the [Sentinel-2 item](https://github.com/stac-extensions/raster/blob/main/examples/item-sentinel2.json):
 
 ```json
 "virtual:assets":{
   "SIR":
   {
     "title": "Shortwave Infra-red",
-    "raster:range": [0, 10000],
-    "href": [ "#B12", "#B8A", "#B04"]
+    "href": [ 
+      "https://raw.githubusercontent.com/stac-extensions/raster/main/examples/item-sentinel2.json#B12",
+      "https://raw.githubusercontent.com/stac-extensions/raster/main/examples/item-sentinel2.json#B8A",
+      "https://raw.githubusercontent.com/stac-extensions/raster/main/examples/item-sentinel2.json#B04"
+    ],
+    "raster:bands": [
+      {
+        "statistics": {
+            "minimum": 0,
+            "maximum": 5000
+        }
+      },
+      {
+        "statistics": {
+            "minimum": 0,
+            "maximum": 7000
+        }
+      },
+      {
+        "statistics": {
+            "minimum": 0,
+            "maximum": 9000
+        }
+      }
+    ]
   }
 }
 ```
 
-| Query key | value                                                             | Example value                                                                                |
-| --------- | ----------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| url       | STAC Item URL                                                     | `https://raw.githubusercontent.com/stac-extensions/raster/main/examples/item-sentinel2.json` |
-| assets    | Assets keys defined in the `bands` objects with field `asset_key` | `B12,B8A,B04`                                                                                |  |
-| rescale   | Delimited Min,Max bounds defined in field `range`                 | `0,10000`                                                                                    |
+| Query key | value                                                                        | Example value                                                                                |
+| --------- | ---------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| url       | STAC Item URL                                                                | `https://raw.githubusercontent.com/stac-extensions/raster/main/examples/item-sentinel2.json` |
+| assets    | Assets keys defined in the `bands` objects with field `asset_key`            | `B12,B8A,B04`                                                                                |  |
+| rescale   | Delimited Min,Max bounds defined in `statistics` object of the `raster:band` | `0,5000,0,7000,0,9000`                                                                                    |
 
-URL: `https://api.cogeo.xyz/stac/crop/14.869,37.682,15.113,37.862/256x256.png?url=https://raw.githubusercontent.com/stac-extensions/raster/main/examples/item-sentinel2.json&assets=B12,B8A,B04&resampling_method=average&rescale=0,10000&return_mask=true`
+URL: `https://api.cogeo.xyz/stac/crop/14.869,37.682,15.113,37.862/256x256.png?url=https://raw.githubusercontent.com/stac-extensions/raster/main/examples/item-sentinel2.json&assets=B12,B8A,B04&resampling_method=average&rescale=0,5000,0,7000,0,9000&return_mask=true`
 
 **Result**: Lava thermal signature of Mount Etna eruption (February 2021)
 
@@ -76,13 +140,23 @@ URL: `https://api.cogeo.xyz/stac/crop/14.869,37.682,15.113,37.862/256x256.png?ur
 From the [Landsat-8 example](examples/item-landsat8.json) \[[article](https://www.usgs.gov/core-science-systems/nli/landsat/landsat-normalized-difference-vegetation-index?qt-science_support_page_related_con=0#qt-science_support_page_related_con)]:
 
 ```json
-"virtual:assets":{
+"virtual:assets": {
   "NDVI": 
   {
-    "href": [ "#B04", "#B05" ],
+    "href": [ "#B4", "#B5" ],
     "title": "Normalized Difference Vegetation Index",
-    "raster:range": [-1, 1],
-    "processing:expression": "(B05–B04)/(B05+B04)",
+    "processing:expression": {
+      "format": "rio-calc",
+      "expression": "(B05–B04)/(B05+B04)"
+    },
+    "raster:bands": [
+      { 
+        "statistics": {
+          "minimum": -1,
+          "maximum": 1
+        }
+      }
+    ]
   }
 }
 ```
@@ -90,9 +164,8 @@ From the [Landsat-8 example](examples/item-landsat8.json) \[[article](https://ww
 | Query key  | value                                                     | Example value                                                                               |
 | ---------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
 | url        | STAC Item URL                                             | `https://raw.githubusercontent.com/stac-extensions/raster/main/examples/item-landsat8.json` |  |
-| rescale    | Delimited Min,Max bounds defined in field `range`         | `-1,1`                                                                                      |
-| expression | Band math formula as defined in field `band_math_formula` | `(B5–B4)/(B5+B4)`                                                                           |
-| color_map  | Color map defined in field `color_map`                    | `ylgn`                                                                                      |
+| rescale    | Delimited Min,Max bounds defined in `statistics` object of the `raster:band`        | `-1,1`                                                                                      |
+| expression | Band math formula as defined in field `processing:expression` | `(B5–B4)/(B5+B4)`                                                                           |
 
 URL:
 
@@ -138,9 +211,9 @@ npm run format-examples
 The following types should be used as applicable `rel` types in the
 [Link Object](https://github.com/radiantearth/stac-spec/tree/master/item-spec/item-spec.md#link-object).
 
-| Type                | Description |
-| ------------------- | ----------- |
-| fancy-rel-type      | This link points to a fancy resource. |
+| Type           | Description                           |
+| -------------- | ------------------------------------- |
+| fancy-rel-type | This link points to a fancy resource. |
 
 ## Contributing
 
