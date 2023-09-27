@@ -11,7 +11,7 @@ This document explains the Composite Extension to the [SpatioTemporal Asset Cata
 This meta-extension does not define any new fields but the usage of muliple extensions to compose
 new assets as ([virtual-assets](https://github.com/stac-extensions/virtual-assets)).
 
-The main purpose is to provide users with the processing information required to create a virtual asset using item or collection assets. The virtual asset can be defined on the collection level if the virtual asset is expected to apply to all items of that collection.
+The main purpose is to provide users with the processing information required to create a virtual asset using item or collection assets. The virtual asset can be defined on the collection level if the virtual asset could be produced for a collection-level asset and / or all child item assets.
 
 For example, a virtual asset could be an RGB combination. The virtual asset definition would be a composite of the `processing:expression` and `raster:bands` information. This information would be used to create on the fly visualisation with dynamic tilers.
 
