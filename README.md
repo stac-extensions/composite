@@ -3,15 +3,17 @@
 - **Title:** Composite
 - **Identifier:** <https://stac-extensions.github.io/composite/v1.0.0/schema.json>
 - **Field Name Prefix:** composite
-- **Scope:** Item
+- **Scope:** Item, Collection
 - **Extension [Maturity Classification](https://github.com/radiantearth/stac-spec/tree/master/extensions/README.md#extension-maturity):** Proposal
 - **Owner**: @emmanuelmathot
 
 This document explains the Composite Extension to the [SpatioTemporal Asset Catalog](https://github.com/radiantearth/stac-spec) (STAC) specification.
 This meta-extension does not define any new fields but the usage of muliple extensions to compose
-new assets ([virtual](https://github.com/stac-extensions/virtual-assets)).
-The main purpose is to provide with potential assets with th assets referenced in an Item.
-For instance, RGB combination, asset's band value processing and to create on the fly visualisation with dynamic tilers.
+new assets as ([virtual-assets](https://github.com/stac-extensions/virtual-assets)).
+
+The main purpose is to provide users with the processing information required to create a virtual asset using item or collection assets. The virtual asset can be defined on the collection level if the virtual asset is expected to apply to all items of that collection.
+
+For example, a virtual asset could be an RGB combination. The virtual asset definition would be a composite of the `processing:expression` and `raster:bands` information. This information would be used to create on the fly visualisation with dynamic tilers.
 
 - Examples:
   - [Landsat-8 example](examples/item-landsat8.json): Shows the basic usage of the extension in a landsat-8 STAC Item
