@@ -30,11 +30,12 @@ The fields in the table below can be used in these parts of STAC documents:
 - [x] Assets (for both Collections and Items, incl. Item Asset Definitions in Collections)
 - [ ] Links
 
-| Field Name            | Type   | Description                                                                                                                                  |
-| --------------------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| compose:colormap_name | string | Color map identifier that must be applied for a raster band                                                                                  |
-| compose:colormap      | object | [Color map JSON definition](https://developmentseed.org/titiler/advanced/rendering/#custom-colormaps) that must be applied for a raster band |
-| compose:color_formula | string | [Color formula](https://developmentseed.org/titiler/advanced/rendering/#color-formula) that must be applied for a raster band                |
+| Field Name            | Type         | Description                                                                                                                                  |
+| --------------------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| compose:rescale       | \[\[number]] | double array of delimited Min,Max range. 1 per band                                                                                          |
+| compose:colormap_name | string       | Color map identifier that must be applied for a raster band                                                                                  |
+| compose:colormap      | object       | [Color map JSON definition](https://developmentseed.org/titiler/advanced/rendering/#custom-colormaps) that must be applied for a raster band |
+| compose:color_formula | string       | [Color formula](https://developmentseed.org/titiler/advanced/rendering/#color-formula) that must be applied for a raster band                |
 
 ## Raster Composition using `virtual:assets`
 
@@ -82,14 +83,7 @@ The [`raster:band`](https://github.com/stac-extensions/raster) field is also use
       "format": "rio-calc",
       "expression": "(B05–B04)/(B05+B04)"
     },
-    "raster:bands": [
-      { 
-        "statistics": {
-          "minimum": -1,
-          "maximum": 1
-        }
-      }
-    ]
+    "raster:bands": [[-1,1]]
   }
 }
 ```
@@ -113,7 +107,7 @@ Either the client building titiler url can use the information in the virtual as
 | --------------- | -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `url`           | `href` in item self link               | STAC Item URL                                                                                                                                                                                                                                                                           |
 | `assets`        | `virtual:hrefs` or asset key           | For a local composition (asset in the same item), the assets key can be retrieved from the virtual:hrefs and joined with comma (e.g. `B04,B03,B02`. Titiler may support to specify directly the virtual asset key and set internally all the parameters according to the current table. |
-| `rescale`       | `raster:bands`                         | Delimited Min,Max bounds defined in `statistics` object of the `raster:band`                                                                                                                                                                                                            |
+| `rescale`       | `compose:rescale`                      | Delimited Min,Max bounds defined in `compose:rescale` field                                                                                                                                                                                                                             |
 | `expression`    | `processing:expression`                | Band math formula as defined in field `processing:expression` if format is `rio-calc`                                                                                                                                                                                                   |
 | `nodata`        | `nodata` in `raster:bands`             | Nodata value defined in `nodata` field of the corresponding `raster:bands` item                                                                                                                                                                                                         |
 | `unscale`       | `scale` and `offset` in `raster:bands` | Scale and Offset value defined in `scale` and `offset` fields of the corresponding `raster:bands` item                                                                                                                                                                                  |
@@ -138,35 +132,16 @@ From the [Sentinel-2 item](https://github.com/stac-extensions/raster/blob/main/e
       "https://raw.githubusercontent.com/stac-extensions/raster/main/examples/item-sentinel2.json#B8A",
       "https://raw.githubusercontent.com/stac-extensions/raster/main/examples/item-sentinel2.json#B04"
     ],
-    "raster:bands": [
-      {
-        "statistics": {
-            "minimum": 0,
-            "maximum": 5000
-        }
-      },
-      {
-        "statistics": {
-            "minimum": 0,
-            "maximum": 7000
-        }
-      },
-      {
-        "statistics": {
-            "minimum": 0,
-            "maximum": 9000
-        }
-      }
-    ]
+    "compose:rescale": [[0,5000],[0,7000],[0,9000]]
   }
 }
 ```
 
-| Query key | value                                                                        | Example value                                                                                |
-| --------- | ---------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| url       | STAC Item URL                                                                | `https://raw.githubusercontent.com/stac-extensions/raster/main/examples/item-sentinel2.json` |
-| assets    | Assets keys defined in the `bands` objects with field `asset_key`            | `B12,B8A,B04`                                                                                |
-| rescale   | Delimited Min,Max bounds defined in `statistics` object of the `raster:band` | `0,5000,0,7000,0,9000`                                                                       |
+| Query key | value                                                             | Example value                                                                                |
+| --------- | ----------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| url       | STAC Item URL                                                     | `https://raw.githubusercontent.com/stac-extensions/raster/main/examples/item-sentinel2.json` |
+| assets    | Assets keys defined in the `bands` objects with field `asset_key` | `B12,B8A,B04`                                                                                |
+| rescale   | Delimited Min,Max bounds defined in `compose:rescale` field       | `0,5000,0,7000,0,9000`                                                                       |
 
 URL: `https://api.cogeo.xyz/stac/crop/14.869,37.682,15.113,37.862/256x256.png?url=https://raw.githubusercontent.com/stac-extensions/raster/main/examples/item-sentinel2.json&assets=B12,B8A,B04&resampling_method=average&rescale=0,5000,0,7000,0,9000&return_mask=true`
 
@@ -189,23 +164,16 @@ From the [Landsat-8 example](examples/item-landsat8.json) \[[article](https://ww
       "expression": "(B05–B04)/(B05+B04)"
     },
     "compose:color_map" : "ylgn",
-    "raster:bands": [
-      { 
-        "statistics": {
-          "minimum": -1,
-          "maximum": 1
-        }
-      }
-    ]
+    "raster:bands": [[-1,1]]
   }
 }
 ```
 
-| Query key  | value                                                                        | Example value                                                                               |
-| ---------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| url        | STAC Item URL                                                                | `https://raw.githubusercontent.com/stac-extensions/raster/main/examples/item-landsat8.json` |
-| rescale    | Delimited Min,Max bounds defined in `statistics` object of the `raster:band` | `-1,1`                                                                                      |
-| expression | Band math formula as defined in field `processing:expression`                | `(B5–B4)/(B5+B4)`                                                                           |
+| Query key  | value                                                         | Example value                                                                               |
+| ---------- | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| url        | STAC Item URL                                                 | `https://raw.githubusercontent.com/stac-extensions/raster/main/examples/item-landsat8.json` |
+| rescale    | Delimited Min,Max bounds defined in `compose:rescale` field   | `-1,1`                                                                                      |
+| expression | Band math formula as defined in field `processing:expression` | `(B5–B4)/(B5+B4)`                                                                           |
 
 URL:
 
