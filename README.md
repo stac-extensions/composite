@@ -149,6 +149,44 @@ URL: `https://api.cogeo.xyz/stac/crop/14.869,37.682,15.113,37.862/256x256.png?ur
 
 ![etna](images/etna.png)
 
+#### Example with CMIP6 COG
+
+```
+"assets": {
+    "tiles": {
+    "href": "s3://nex-gddp-cmip6-cog/daily/GISS-E2-1-G/historical/r1i1p1f2/tas/tas_day_GISS-E2-1-G_historical_r1i1p1f2_gn_1950_01_05.tif",
+      "title": "tiles",
+      "description": "Virtual asset for tiling",
+      "virtual:hrefs": [
+          "#1"
+      ],
+      "compose:rescale": [
+          210,
+          330
+      ],
+      "compose:colormap_name": "hot",
+      "compose:resampling": "nearest",
+      "raster:bands": [
+          {
+              "nodata": 0
+          }
+      ],
+      "roles": [
+          "virtual",
+          "tiling"
+      ]
+  }
+}
+```
+
+**Result**: Global Near-surface Air Temperature from CMIP6 GISS-E2-1-G GCM for January 5, 1950
+
+URL: `https://api.cogeo.xyz/stac/tiles/0/0/0.png?url=https://raw.githubusercontent.com/abarciauskas-bgse/composite/cmip6-example/examples/cmip6-tas-item.json&assets=tiling&resampling_method=nearest&rescale=210,330&colormap_name=jet`
+
+![0](https://github.com/abarciauskas-bgse/composite/assets/15016780/5c2c843c-b171-4b66-a08c-ed28d2e23d97)
+
+
+
 #### Normalized Difference Vegetation Index (NDVI) example
 
 From the [Landsat-8 example](examples/item-landsat8.json) \[[article](https://www.usgs.gov/core-science-systems/nli/landsat/landsat-normalized-difference-vegetation-index?qt-science_support_page_related_con=0#qt-science_support_page_related_con)]:
