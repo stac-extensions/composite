@@ -153,27 +153,29 @@ URL: `https://api.cogeo.xyz/stac/crop/14.869,37.682,15.113,37.862/256x256.png?ur
 
 ```
 "assets": {
+    "tiles": {
     "href": "s3://nex-gddp-cmip6-cog/daily/GISS-E2-1-G/historical/r1i1p1f2/tas/tas_day_GISS-E2-1-G_historical_r1i1p1f2_gn_1950_01_05.tif",
-    "title": "tiling",
-    "description": "Virtual asset for tiling",
-    "virtual:hrefs": [
-        "#1"
-    ],
-    "compose:rescale": [
-        210,
-        330
-    ],
-    "compose:colormap_name": "hot",
-    "compose:resampling": "nearest",
-    "raster:bands": [
-        {
-            "nodata": 0
-        }
-    ],
-    "roles": [
-        "virtual",
-        "tiling"
-    ]
+      "title": "tiles",
+      "description": "Virtual asset for tiling",
+      "virtual:hrefs": [
+          "#1"
+      ],
+      "compose:rescale": [
+          210,
+          330
+      ],
+      "compose:colormap_name": "hot",
+      "compose:resampling": "nearest",
+      "raster:bands": [
+          {
+              "nodata": 0
+          }
+      ],
+      "roles": [
+          "virtual",
+          "tiling"
+      ]
+  }
 }
 ```
 
