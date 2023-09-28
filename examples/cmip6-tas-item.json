@@ -176,7 +176,7 @@
                 330
             ],
             "compose:colormap_name": "hot",
-            "compoes:resampling": "nearest",
+            "compose:resampling": "nearest",
             "raster:bands": [
                 {
                     "nodata": 0
