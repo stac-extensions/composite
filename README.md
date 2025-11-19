@@ -1,3 +1,7 @@
+> [!CAUTION]
+> **DEPRECATED**: This extension has been deprecated in favor of the [Render Extension](https://github.com/stac-extensions/render).
+> Please use the Render Extension for all new implementations.
+
 # Composite Extension Specification
 
 - **Title:** Composite
