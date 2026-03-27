@@ -1,0 +1,202 @@
+{
+    "type": "Feature",
+    "stac_version": "1.0.0",
+    "id": "tas_day_GISS-E2-1-G_historical_r1i1p1f2_gn_1950_01_05.tif",
+    "properties": {
+        "proj:epsg": 4326,
+        "proj:geometry": {
+            "type": "Polygon",
+            "coordinates": [
+                [
+                    [
+                        -180.0,
+                        -60.0
+                    ],
+                    [
+                        180.0,
+                        -60.0
+                    ],
+                    [
+                        180.0,
+                        90.0
+                    ],
+                    [
+                        -180.0,
+                        90.0
+                    ],
+                    [
+                        -180.0,
+                        -60.0
+                    ]
+                ]
+            ]
+        },
+        "proj:bbox": [
+            -180.0,
+            -60.0,
+            180.0,
+            90.0
+        ],
+        "proj:shape": [
+            600,
+            1440
+        ],
+        "proj:transform": [
+            0.25,
+            0.0,
+            -180.0,
+            0.0,
+            -0.25,
+            90.0,
+            0.0,
+            0.0,
+            1.0
+        ],
+        "proj:projjson": {
+            "$schema": "https://proj.org/schemas/v0.4/projjson.schema.json",
+            "type": "GeographicCRS",
+            "name": "WGS 84",
+            "datum": {
+                "type": "GeodeticReferenceFrame",
+                "name": "World Geodetic System 1984",
+                "ellipsoid": {
+                    "name": "WGS 84",
+                    "semi_major_axis": 6378137,
+                    "inverse_flattening": 298.257223563
+                }
+            },
+            "coordinate_system": {
+                "subtype": "ellipsoidal",
+                "axis": [
+                    {
+                        "name": "Geodetic latitude",
+                        "abbreviation": "Lat",
+                        "direction": "north",
+                        "unit": "degree"
+                    },
+                    {
+                        "name": "Geodetic longitude",
+                        "abbreviation": "Lon",
+                        "direction": "east",
+                        "unit": "degree"
+                    }
+                ]
+            },
+            "id": {
+                "authority": "EPSG",
+                "code": 4326
+            }
+        },
+        "datetime": "1950-01-05T00:00:00Z"
+    },
+    "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+            [
+                [
+                    -180.0,
+                    -60.0
+                ],
+                [
+                    180.0,
+                    -60.0
+                ],
+                [
+                    180.0,
+                    90.0
+                ],
+                [
+                    -180.0,
+                    90.0
+                ],
+                [
+                    -180.0,
+                    -60.0
+                ]
+            ]
+        ]
+    },
+    "links": [
+        {
+            "rel": "collection",
+            "href": "CMIP6_daily_GISS-E2-1-G_tas",
+            "type": "application/json"
+        }
+    ],
+    "assets": {
+        "data": {
+            "href": "s3://nex-gddp-cmip6-cog/daily/GISS-E2-1-G/historical/r1i1p1f2/tas/tas_day_GISS-E2-1-G_historical_r1i1p1f2_gn_1950_01_05.tif",
+            "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+            "raster:bands": [
+                {
+                    "data_type": "float32",
+                    "scale": 1.0,
+                    "offset": 0.0,
+                    "sampling": "area",
+                    "nodata": "nan",
+                    "statistics": {
+                        "mean": 272.42557694170597,
+                        "minimum": 217.20098876953125,
+                        "maximum": 311.0889892578125,
+                        "stddev": 22.54797993710382,
+                        "valid_percent": 30.691735582552692
+                    },
+                    "histogram": {
+                        "count": 11,
+                        "min": 217.20098876953125,
+                        "max": 311.0889892578125,
+                        "buckets": [
+                            1092,
+                            8609,
+                            11606,
+                            12185,
+                            14589,
+                            19825,
+                            13247,
+                            15124,
+                            32320,
+                            5602
+                        ]
+                    }
+                }
+            ],
+            "roles": [
+                "data"
+            ]
+        },
+        "tiling": {
+            "href": "s3://nex-gddp-cmip6-cog/daily/GISS-E2-1-G/historical/r1i1p1f2/tas/tas_day_GISS-E2-1-G_historical_r1i1p1f2_gn_1950_01_05.tif",
+            "title": "tiling",
+            "description": "Virtual asset for tiling",
+            "virtual:hrefs": [
+                "#1"
+            ],
+            "compose:rescale": [
+                210,
+                330
+            ],
+            "compose:colormap_name": "hot",
+            "compose:resampling": "nearest",
+            "raster:bands": [
+                {
+                    "nodata": 0
+                }
+            ],
+            "roles": [
+                "virtual",
+                "tiling"
+            ]
+        }
+    },
+    "bbox": [
+        -180.0,
+        -60.0,
+        180.0,
+        90.0
+    ],
+    "stac_extensions": [
+        "https://stac-extensions.github.io/projection/v1.1.0/schema.json",
+        "https://stac-extensions.github.io/raster/v1.1.0/schema.json"
+    ],
+    "collection": "CMIP6_daily_GISS-E2-1-G_tas"
+}
